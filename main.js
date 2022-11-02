@@ -30,7 +30,7 @@ const init = () => {
         width: "40px",
         height: "40px",
         border: "solid 1px #000",
-        backgroundColor: "#080"
+        backgroundColor: "#080",
       });
       container.appendChild(div);
 
@@ -45,7 +45,7 @@ const init = () => {
         width: "40px",
         height: "40px",
         borderRadius: "50%",
-        backgroundColor: "#fff"
+        backgroundColor: "#fff",
       });
 
       board[y][x].element = piece;
@@ -123,6 +123,7 @@ const changeTurn = () => {
       } else {
         message += "Draw.";
       }
+      currentTurn = -1;
       document.getElementById("message").textContent = message;
     } else {
       lastPass = true;
@@ -139,14 +140,37 @@ const changeTurn = () => {
   }
 };
 
+const computerMove = async () => {
+  await new Promise((r) => setTimeout(r, 500));
+  for (let y = 1; y < 9; y++) {
+    for (let x = 1; x < 9; x++) {
+      if (putPiece(x, y, currentTurn)) {
+        putPiece(x, y, currentTurn, true);
+        showBoard();
+        changeTurn();
+        if (currentTurn === 2) {
+          computerMove();
+        }
+        return;
+      }
+    }
+  }
+};
+
 const ondown = (x, y) => {
   if (board[y][x].value !== 0) {
     return;
   }
-  if (putPiece(x, y, currentTurn)) {
-    putPiece(x, y, currentTurn, true);
-    showBoard();
-    changeTurn();
+  if (currentTurn === 1) {
+    if (putPiece(x, y, currentTurn)) {
+      putPiece(x, y, currentTurn, true);
+      showBoard();
+      changeTurn();
+      if (currentTurn === 2) {
+        computerMove();
+      }
+      return;
+    }
   }
 };
 
